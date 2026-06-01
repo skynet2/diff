@@ -30,7 +30,7 @@ export function filterVisible(nodes: MergedNode[], hideSame: boolean): MergedNod
           [class]="statusClass(node)"
           [class.selected]="key === selected()"
           [attr.data-pathkey]="key"
-          (click)="select.emit(childPath(node))"
+          (click)="selectPath.emit(childPath(node))"
         >
           @if (cell.hasChildren) {
             <button
@@ -55,7 +55,7 @@ export function filterVisible(nodes: MergedNode[], hideSame: boolean): MergedNod
               [selected]="selected()"
               [path]="childPath(node)"
               (toggle)="toggle.emit($event)"
-              (select)="select.emit($event)"
+              (selectPath)="selectPath.emit($event)"
             />
           </div>
         }
@@ -135,7 +135,7 @@ export class JsonTreeViewComponent {
   readonly path = input<(string | number)[]>([]);
 
   readonly toggle = output<string>();
-  readonly select = output<(string | number)[]>();
+  readonly selectPath = output<(string | number)[]>();
 
   displayNodes(): MergedNode[] {
     return filterVisible(this.nodes(), this.hideSame());

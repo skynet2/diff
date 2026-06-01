@@ -53,7 +53,7 @@ import { parseContent, pathAtOffset, serialize, suggestFormat } from './parse/pa
             [hideSame]="hideSame()"
             [selected]="selected()"
             (toggle)="toggleExpand.emit($event)"
-            (select)="select.emit($event)"
+            (selectPath)="selectPath.emit($event)"
           />
         }
       }
@@ -89,7 +89,7 @@ export class EditorPanelComponent {
   readonly hideSame = input<boolean>(false);
   readonly selected = input<string>('');
   readonly toggleExpand = output<string>();
-  readonly select = output<(string | number)[]>();
+  readonly selectPath = output<(string | number)[]>();
 
   protected readonly svc = inject(DiffStateService);
   private readonly scroll = inject(ScrollSyncService);
@@ -158,9 +158,8 @@ export class EditorPanelComponent {
 
   onCaret(e: { offset: number; text: string }): void {
     const path = pathAtOffset(e.text, this.format(), e.offset);
-    console.debug('[caret]', this.side(), 'offset', e.offset, 'len', e.text.length, 'fmt', this.format(), 'path', JSON.stringify(path));
     if (path) {
-      this.select.emit(path);
+      this.selectPath.emit(path);
     }
   }
 
