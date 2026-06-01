@@ -89,7 +89,7 @@ export class MonacoEditorComponent implements OnInit, OnDestroy {
   readonly language = input<'json' | 'yaml'>('json');
   readonly valueChange = output<string>();
   readonly scrolled = output<{ top: number; left: number }>();
-  readonly caretOffset = output<number>();
+  readonly caret = output<{ offset: number; text: string }>();
 
   private readonly host = inject(ElementRef<HTMLElement>).nativeElement as HTMLElement;
   private monaco?: MonacoApi;
@@ -163,7 +163,7 @@ export class MonacoEditorComponent implements OnInit, OnDestroy {
     this.editor.onDidChangeCursorPosition((e) => {
       const model = this.editor?.getModel();
       if (model) {
-        this.caretOffset.emit(model.getOffsetAt(e.position));
+        this.caret.emit({ offset: model.getOffsetAt(e.position), text: model.getValue() });
       }
     });
   }

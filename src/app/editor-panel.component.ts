@@ -40,7 +40,7 @@ import { parseContent, pathAtOffset, serialize, suggestFormat } from './parse/pa
           [language]="format()"
           (valueChange)="onText($event)"
           (scrolled)="onMonacoScroll($event)"
-          (caretOffset)="onCaret($event)"
+          (caret)="onCaret($event)"
         />
       } @else {
         @if (error()) {
@@ -156,8 +156,9 @@ export class EditorPanelComponent {
     this.scroll.report(e.top, e.left);
   }
 
-  onCaret(offset: number): void {
-    const path = pathAtOffset(this.rawText(), this.format(), offset);
+  onCaret(e: { offset: number; text: string }): void {
+    const path = pathAtOffset(e.text, this.format(), e.offset);
+    console.debug('[caret]', this.side(), 'offset', e.offset, 'len', e.text.length, 'fmt', this.format(), 'path', JSON.stringify(path));
     if (path) {
       this.select.emit(path);
     }
