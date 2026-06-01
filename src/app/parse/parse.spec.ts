@@ -17,8 +17,21 @@ describe('pathAtOffset', () => {
     expect(pathAtOffset(json, 'json', 0)).toBeNull();
   });
 
-  it('returns null for yaml (unsupported in text mode)', () => {
-    expect(pathAtOffset('a: 1', 'yaml', 2)).toBeNull();
+  const yaml = 'user:\n  name: alice\n  tags:\n    - a\n    - b\nage: 30\n';
+
+  it('yaml: returns the path at a nested value', () => {
+    const offset = yaml.indexOf('alice') + 1;
+    expect(pathAtOffset(yaml, 'yaml', offset)).toEqual(['user', 'name']);
+  });
+
+  it('yaml: returns the path at an array element', () => {
+    const offset = yaml.indexOf('- b') + 2;
+    expect(pathAtOffset(yaml, 'yaml', offset)).toEqual(['user', 'tags', 1]);
+  });
+
+  it('yaml: returns the path at a top-level value', () => {
+    const offset = yaml.indexOf('30') + 1;
+    expect(pathAtOffset(yaml, 'yaml', offset)).toEqual(['age']);
   });
 });
 
