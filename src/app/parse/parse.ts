@@ -26,6 +26,7 @@ export function parseContent(text: string, format: Format): ParseResult {
 }
 
 export function suggestFormat(text: string, current: Format): Format | null {
+  if (text.trim() === '') return null;
   if (isOk(parseContent(text, current))) return null;
   const other: Format = current === 'json' ? 'yaml' : 'json';
   return isOk(parseContent(text, other)) ? other : null;

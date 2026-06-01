@@ -27,4 +27,10 @@ describe('suggestFormat', () => {
   it('no suggestion when neither parses', () => {
     expect(suggestFormat('{x:', 'json')).toBeNull();
   });
+  it('no suggestion for empty content', () => {
+    expect(suggestFormat('', 'json')).toBeNull();
+  });
+  it('no suggestion for whitespace-only content', () => {
+    expect(suggestFormat('   \n  ', 'json')).toBeNull();
+  });
 });
