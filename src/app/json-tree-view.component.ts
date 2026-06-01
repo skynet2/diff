@@ -21,7 +21,7 @@ const STATUS_CLASS: Record<NodeStatus, string> = {
       } @else {
         @let key = pathKeyOf(node);
         @let open = expanded().has(key);
-        <div class="row" [class]="statusClass(node)">
+        <div class="row" [class]="statusClass(node)" [attr.data-pathkey]="key">
           @if (cell.hasChildren) {
             <button
               type="button"
