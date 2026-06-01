@@ -1,4 +1,4 @@
-import { load, loadAll } from 'js-yaml';
+import { load, loadAll, dump } from 'js-yaml';
 
 export type Format = 'json' | 'yaml';
 export interface ParseOk { value: unknown; error?: undefined; }
@@ -23,6 +23,10 @@ export function parseContent(text: string, format: Format): ParseResult {
   } catch (e) {
     return { error: e instanceof Error ? e.message : String(e) };
   }
+}
+
+export function serialize(value: unknown, format: Format): string {
+  return format === 'json' ? JSON.stringify(value, null, 2) : dump(value);
 }
 
 export function suggestFormat(text: string, current: Format): Format | null {

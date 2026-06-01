@@ -15,7 +15,7 @@ import { JsonTreeViewComponent } from './json-tree-view.component';
 import { PanelToolbarComponent } from './panel-toolbar.component';
 import { DiffStateService } from './diff-state.service';
 import { ScrollSyncService } from './scroll-sync.service';
-import { parseContent, suggestFormat } from './parse/parse';
+import { parseContent, serialize, suggestFormat } from './parse/parse';
 
 @Component({
   selector: 'app-editor-panel',
@@ -50,7 +50,9 @@ import { parseContent, suggestFormat } from './parse/parse';
             [side]="side()"
             [expanded]="expanded()"
             [hideSame]="hideSame()"
+            [selected]="selected()"
             (toggle)="toggleExpand.emit($event)"
+            (select)="select.emit($event)"
           />
         }
       }
@@ -84,7 +86,9 @@ export class EditorPanelComponent {
   readonly side = input.required<'left' | 'right'>();
   readonly expanded = input.required<Set<string>>();
   readonly hideSame = input<boolean>(false);
+  readonly selected = input<string>('');
   readonly toggleExpand = output<string>();
+  readonly select = output<(string | number)[]>();
 
   protected readonly svc = inject(DiffStateService);
   private readonly scroll = inject(ScrollSyncService);
@@ -119,6 +123,18 @@ export class EditorPanelComponent {
 
   onFormat(format: 'json' | 'yaml'): void {
     this.format.set(format);
+    this.reparse();
+  }
+
+  reformat(): void {
+    if (this.rawText().trim() === '') {
+      return;
+    }
+    const r = parseContent(this.rawText(), this.format());
+    if (r.error !== undefined) {
+      return;
+    }
+    this.rawText.set(serialize(r.value, this.format()));
     this.reparse();
   }
 

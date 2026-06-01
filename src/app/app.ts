@@ -1,8 +1,8 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, viewChildren } from '@angular/core';
 import { EditorPanelComponent } from './editor-panel.component';
 import { DiffControlsComponent } from './diff-controls.component';
 import { DiffStateService } from './diff-state.service';
-import { pathKey } from './diff/path';
+import { pathKey, toJsonPath } from './diff/path';
 
 @Component({
   selector: 'app-root',
@@ -13,10 +13,21 @@ import { pathKey } from './diff/path';
 })
 export class App {
   private readonly svc = inject(DiffStateService);
+  private readonly panels = viewChildren(EditorPanelComponent);
 
   protected readonly expanded = signal<Set<string>>(new Set());
   protected readonly currentIndex = signal(0);
   protected readonly hideSame = signal(false);
+  protected readonly selectedPath = signal<(string | number)[] | null>(null);
+
+  protected readonly selectedKey = computed(() => {
+    const p = this.selectedPath();
+    return p ? pathKey(p) : '';
+  });
+  protected readonly selectedDisplay = computed(() => {
+    const p = this.selectedPath();
+    return p ? toJsonPath(p) : '';
+  });
 
   protected readonly count = computed(() => this.svc.result().entries.length);
   private readonly boundedIndex = computed(() =>
@@ -25,6 +36,16 @@ export class App {
   protected readonly position = computed(() =>
     this.count() === 0 ? 0 : this.boundedIndex() + 1,
   );
+
+  onSelect(path: (string | number)[]): void {
+    this.selectedPath.set(path);
+  }
+
+  formatAll(): void {
+    for (const panel of this.panels()) {
+      panel.reformat();
+    }
+  }
 
   onToggleExpand(key: string): void {
     const s = new Set(this.expanded());

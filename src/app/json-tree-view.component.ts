@@ -25,12 +25,18 @@ export function filterVisible(nodes: MergedNode[], hideSame: boolean): MergedNod
       } @else {
         @let key = pathKeyOf(node);
         @let open = expanded().has(key);
-        <div class="row" [class]="statusClass(node)" [attr.data-pathkey]="key">
+        <div
+          class="row"
+          [class]="statusClass(node)"
+          [class.selected]="key === selected()"
+          [attr.data-pathkey]="key"
+          (click)="select.emit(childPath(node))"
+        >
           @if (cell.hasChildren) {
             <button
               type="button"
               class="caret"
-              (click)="toggle.emit(key)"
+              (click)="toggle.emit(key); $event.stopPropagation()"
               [attr.aria-expanded]="open"
             >{{ open ? '▾' : '▸' }}</button>
           } @else {
@@ -46,8 +52,10 @@ export function filterVisible(nodes: MergedNode[], hideSame: boolean): MergedNod
               [side]="side()"
               [expanded]="expanded()"
               [hideSame]="hideSame()"
+              [selected]="selected()"
               [path]="childPath(node)"
               (toggle)="toggle.emit($event)"
+              (select)="select.emit($event)"
             />
           </div>
         }
@@ -69,6 +77,11 @@ export function filterVisible(nodes: MergedNode[], hideSame: boolean): MergedNod
         box-sizing: border-box;
         padding: 0 4px;
         white-space: nowrap;
+        cursor: pointer;
+      }
+      .row.selected {
+        outline: 1px solid #569cd6;
+        outline-offset: -1px;
       }
       .row.filler {
         background: transparent;
@@ -118,9 +131,11 @@ export class JsonTreeViewComponent {
   readonly side = input.required<'left' | 'right'>();
   readonly expanded = input.required<Set<string>>();
   readonly hideSame = input<boolean>(false);
+  readonly selected = input<string>('');
   readonly path = input<(string | number)[]>([]);
 
   readonly toggle = output<string>();
+  readonly select = output<(string | number)[]>();
 
   displayNodes(): MergedNode[] {
     return filterVisible(this.nodes(), this.hideSame());

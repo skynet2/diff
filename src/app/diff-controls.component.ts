@@ -10,6 +10,13 @@ import {
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    <button
+      type="button"
+      class="format-btn"
+      data-testid="format"
+      (click)="formatDocuments.emit()"
+    >Format</button>
+
     <div class="label">
       {{ count() === 0 ? 'No differences' : count() + ' differences' }}
     </div>
@@ -102,6 +109,18 @@ import {
         cursor: pointer;
         margin: 0;
       }
+      .format-btn {
+        border: 1px solid #3a3a3a;
+        border-radius: 4px;
+        background: #333336;
+        color: #d4d4d4;
+        cursor: pointer;
+        font: inherit;
+        padding: 3px 10px;
+      }
+      .format-btn:hover {
+        background: #45454a;
+      }
     `,
   ],
 })
@@ -112,4 +131,5 @@ export class DiffControlsComponent {
   readonly prev = output<void>();
   readonly next = output<void>();
   readonly hideSameChange = output<boolean>();
+  readonly formatDocuments = output<void>();
 }

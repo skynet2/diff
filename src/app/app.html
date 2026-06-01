@@ -4,7 +4,9 @@
     [side]="'left'"
     [expanded]="expanded()"
     [hideSame]="hideSame()"
+    [selected]="selectedKey()"
     (toggleExpand)="onToggleExpand($event)"
+    (select)="onSelect($event)"
   />
   <app-diff-controls
     [count]="count()"
@@ -13,12 +15,23 @@
     (prev)="prev()"
     (next)="next()"
     (hideSameChange)="hideSame.set($event)"
+    (formatDocuments)="formatAll()"
   />
   <app-editor-panel
     class="panel"
     [side]="'right'"
     [expanded]="expanded()"
     [hideSame]="hideSame()"
+    [selected]="selectedKey()"
     (toggleExpand)="onToggleExpand($event)"
+    (select)="onSelect($event)"
   />
+</div>
+
+<div class="statusbar">
+  @if (selectedDisplay()) {
+    <span class="path">{{ selectedDisplay() }}</span>
+  } @else {
+    <span class="hint">Click a node to see its path</span>
+  }
 </div>
