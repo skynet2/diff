@@ -16,6 +16,16 @@ function walk(a: unknown, b: unknown, path: (string | number)[], out: DiffEntry[
     out.push({ path, type: 'changed', leftVal: a, rightVal: b });
     return;
   }
+  if (isObject(a) && isObject(b)) {
+    const keys = [...new Set([...Object.keys(a), ...Object.keys(b)])];
+    for (const k of keys) {
+      const inA = k in a, inB = k in b;
+      if (inA && !inB) out.push({ path: [...path, k], type: 'removed', leftVal: a[k] });
+      else if (!inA && inB) out.push({ path: [...path, k], type: 'added', rightVal: b[k] });
+      else walk(a[k], b[k], [...path, k], out);
+    }
+    return;
+  }
   if (!isObject(a) && !Array.isArray(a)) {
     if (a !== b) out.push({ path, type: 'changed', leftVal: a, rightVal: b });
   }

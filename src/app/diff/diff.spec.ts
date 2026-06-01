@@ -27,3 +27,34 @@ describe('diff scalars (changed)', () => {
     }),
   );
 });
+
+describe('diff objects (no difference)', () => {
+  const cases = [
+    { name: 'same keys same values', a: { x: 1, y: 2 }, b: { x: 1, y: 2 } },
+    { name: 'key order ignored', a: { x: 1, y: 2 }, b: { y: 2, x: 1 } },
+  ];
+  cases.forEach(({ name, a, b }) =>
+    it(name, () => expect(diff(a, b).entries).toEqual([])),
+  );
+});
+
+describe('diff objects (differences)', () => {
+  it('added key', () => {
+    const r = diff({ x: 1 }, { x: 1, y: 2 });
+    expect(r.entries).toEqual([{ path: ['y'], type: 'added', rightVal: 2 }]);
+  });
+  it('removed key', () => {
+    const r = diff({ x: 1, y: 2 }, { x: 1 });
+    expect(r.entries).toEqual([{ path: ['y'], type: 'removed', leftVal: 2 }]);
+  });
+  it('changed nested leaf only', () => {
+    const r = diff({ addr: { city: 'NY', zip: '1' } }, { addr: { city: 'NY', zip: '2' } });
+    expect(r.entries).toEqual([
+      { path: ['addr', 'zip'], type: 'changed', leftVal: '1', rightVal: '2' },
+    ]);
+  });
+  it('null vs missing is removed, not changed', () => {
+    const r = diff({ x: null }, {});
+    expect(r.entries).toEqual([{ path: ['x'], type: 'removed', leftVal: null }]);
+  });
+});
