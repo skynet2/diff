@@ -36,7 +36,8 @@ function walk(a: unknown, b: unknown, path: (string | number)[], out: DiffEntry[
     return;
   }
   if (!isObject(a) && !Array.isArray(a)) {
-    if (a !== b) out.push({ path, type: 'changed', leftVal: a, rightVal: b });
+    const equal = a === b || (Number.isNaN(a as number) && Number.isNaN(b as number));
+    if (!equal) out.push({ path, type: 'changed', leftVal: a, rightVal: b });
   }
 }
 

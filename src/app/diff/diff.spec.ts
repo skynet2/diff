@@ -10,6 +10,9 @@ describe('diff scalars (no difference)', () => {
   cases.forEach(({ name, a, b }) =>
     it(name, () => expect(diff(a, b).entries).toEqual([])),
   );
+  it('NaN vs NaN', () => expect(diff({ score: NaN }, { score: NaN }).entries).toEqual([]));
+  it('0 vs -0', () => expect(diff(0, -0).entries).toEqual([]));
+  it('-0 vs 0', () => expect(diff(-0, 0).entries).toEqual([]));
 });
 
 describe('diff scalars (changed)', () => {
