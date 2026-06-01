@@ -22,6 +22,34 @@ function scalarEqual(a: unknown, b: unknown): boolean {
   return kind(a) === kind(b) && (a === b || (Number.isNaN(a as number) && Number.isNaN(b as number)));
 }
 
+function entriesOf(container: unknown): [string | number, unknown][] {
+  if (isObject(container)) return Object.entries(container);
+  if (Array.isArray(container)) return container.map((v, i) => [i, v]);
+  return [];
+}
+
+function oneSided(container: unknown, status: 'added' | 'removed'): MergedNode[] {
+  return entriesOf(container).map(([key, value]) => {
+    const node: MergedNode = { key, status };
+    if (status === 'added') node.right = cell(value);
+    else node.left = cell(value);
+    if (hasChildren(value)) node.children = oneSided(value, status);
+    return node;
+  });
+}
+
+function addedNode(key: string | number, value: unknown): MergedNode {
+  const node: MergedNode = { key, status: 'added', right: cell(value) };
+  if (hasChildren(value)) node.children = oneSided(value, 'added');
+  return node;
+}
+
+function removedNode(key: string | number, value: unknown): MergedNode {
+  const node: MergedNode = { key, status: 'removed', left: cell(value) };
+  if (hasChildren(value)) node.children = oneSided(value, 'removed');
+  return node;
+}
+
 interface Merged {
   nodes: MergedNode[];
   changed: boolean;
@@ -46,8 +74,8 @@ function mergeChildrenObj(a: Record<string, unknown>, b: Record<string, unknown>
   let changed = false;
   for (const k of keys) {
     const inA = k in a, inB = k in b;
-    if (inA && !inB) { nodes.push({ key: k, status: 'removed', left: cell(a[k]) }); changed = true; }
-    else if (!inA && inB) { nodes.push({ key: k, status: 'added', right: cell(b[k]) }); changed = true; }
+    if (inA && !inB) { nodes.push(removedNode(k, a[k])); changed = true; }
+    else if (!inA && inB) { nodes.push(addedNode(k, b[k])); changed = true; }
     else {
       const node = mergePair(a[k], b[k], k);
       if (node.status !== 'same') changed = true;
@@ -62,8 +90,8 @@ function mergeChildrenArr(a: unknown[], b: unknown[]): Merged {
   const nodes: MergedNode[] = [];
   let changed = false;
   for (let i = 0; i < n; i++) {
-    if (i >= a.length) { nodes.push({ key: i, status: 'added', right: cell(b[i]) }); changed = true; }
-    else if (i >= b.length) { nodes.push({ key: i, status: 'removed', left: cell(a[i]) }); changed = true; }
+    if (i >= a.length) { nodes.push(addedNode(i, b[i])); changed = true; }
+    else if (i >= b.length) { nodes.push(removedNode(i, a[i])); changed = true; }
     else {
       const node = mergePair(a[i], b[i], i);
       if (node.status !== 'same') changed = true;

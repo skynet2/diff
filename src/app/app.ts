@@ -18,8 +18,11 @@ export class App {
   protected readonly currentIndex = signal(0);
 
   protected readonly count = computed(() => this.svc.result().entries.length);
+  private readonly boundedIndex = computed(() =>
+    Math.min(this.currentIndex(), Math.max(0, this.count() - 1)),
+  );
   protected readonly position = computed(() =>
-    this.count() === 0 ? 0 : this.currentIndex() + 1,
+    this.count() === 0 ? 0 : this.boundedIndex() + 1,
   );
 
   onToggleExpand(key: string): void {
@@ -37,7 +40,7 @@ export class App {
     if (n === 0) {
       return;
     }
-    this.currentIndex.set((this.currentIndex() + 1) % n);
+    this.currentIndex.set((this.boundedIndex() + 1) % n);
     this.revealCurrent();
   }
 
@@ -46,7 +49,7 @@ export class App {
     if (n === 0) {
       return;
     }
-    this.currentIndex.set((this.currentIndex() - 1 + n) % n);
+    this.currentIndex.set((this.boundedIndex() - 1 + n) % n);
     this.revealCurrent();
   }
 
@@ -55,8 +58,7 @@ export class App {
     if (entries.length === 0) {
       return;
     }
-    const index = Math.min(this.currentIndex(), entries.length - 1);
-    const path = entries[index].path;
+    const path = entries[this.boundedIndex()].path;
 
     const s = new Set(this.expanded());
     for (let i = 1; i < path.length; i++) {

@@ -117,7 +117,16 @@ export class MonacoEditorComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
-    const monaco = await loadMonaco();
+    let monaco: MonacoApi;
+    try {
+      monaco = await loadMonaco();
+    } catch (e) {
+      if (!this.destroyed) {
+        this.host.textContent =
+          'Failed to load the editor: ' + (e instanceof Error ? e.message : String(e));
+      }
+      return;
+    }
     if (this.destroyed) {
       return;
     }
