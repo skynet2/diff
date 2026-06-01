@@ -15,7 +15,7 @@ import { JsonTreeViewComponent } from './json-tree-view.component';
 import { PanelToolbarComponent } from './panel-toolbar.component';
 import { DiffStateService } from './diff-state.service';
 import { ScrollSyncService } from './scroll-sync.service';
-import { parseContent, serialize, suggestFormat } from './parse/parse';
+import { parseContent, pathAtOffset, serialize, suggestFormat } from './parse/parse';
 
 @Component({
   selector: 'app-editor-panel',
@@ -40,6 +40,7 @@ import { parseContent, serialize, suggestFormat } from './parse/parse';
           [language]="format()"
           (valueChange)="onText($event)"
           (scrolled)="onMonacoScroll($event)"
+          (caretOffset)="onCaret($event)"
         />
       } @else {
         @if (error()) {
@@ -153,6 +154,13 @@ export class EditorPanelComponent {
       return;
     }
     this.scroll.report(e.top, e.left);
+  }
+
+  onCaret(offset: number): void {
+    const path = pathAtOffset(this.rawText(), this.format(), offset);
+    if (path) {
+      this.select.emit(path);
+    }
   }
 
   private applyScroll(top: number, left: number): void {

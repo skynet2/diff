@@ -1,4 +1,5 @@
 import { load, loadAll, dump } from 'js-yaml';
+import { getLocation } from 'jsonc-parser';
 
 export type Format = 'json' | 'yaml';
 export interface ParseOk { value: unknown; error?: undefined; }
@@ -23,6 +24,18 @@ export function parseContent(text: string, format: Format): ParseResult {
   } catch (e) {
     return { error: e instanceof Error ? e.message : String(e) };
   }
+}
+
+export function pathAtOffset(
+  text: string,
+  format: Format,
+  offset: number,
+): (string | number)[] | null {
+  if (format !== 'json') {
+    return null;
+  }
+  const path = getLocation(text, offset).path;
+  return path.length > 0 ? path : null;
 }
 
 export function serialize(value: unknown, format: Format): string {

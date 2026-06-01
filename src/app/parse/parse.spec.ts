@@ -1,4 +1,26 @@
-import { parseContent, suggestFormat } from './parse';
+import { parseContent, pathAtOffset, suggestFormat } from './parse';
+
+describe('pathAtOffset', () => {
+  const json = '{\n  "user": {\n    "name": "alice"\n  },\n  "age": 30\n}';
+
+  it('returns the path at a nested value offset', () => {
+    const offset = json.indexOf('alice') + 1;
+    expect(pathAtOffset(json, 'json', offset)).toEqual(['user', 'name']);
+  });
+
+  it('returns the path at a top-level value offset', () => {
+    const offset = json.indexOf('30') + 1;
+    expect(pathAtOffset(json, 'json', offset)).toEqual(['age']);
+  });
+
+  it('returns null at the root', () => {
+    expect(pathAtOffset(json, 'json', 0)).toBeNull();
+  });
+
+  it('returns null for yaml (unsupported in text mode)', () => {
+    expect(pathAtOffset('a: 1', 'yaml', 2)).toBeNull();
+  });
+});
 
 describe('parseContent (success)', () => {
   it('json', () => expect(parseContent('{"x":1}', 'json')).toEqual({ value: { x: 1 } }));
