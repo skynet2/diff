@@ -26,6 +26,15 @@ function walk(a: unknown, b: unknown, path: (string | number)[], out: DiffEntry[
     }
     return;
   }
+  if (Array.isArray(a) && Array.isArray(b)) {
+    const n = Math.max(a.length, b.length);
+    for (let i = 0; i < n; i++) {
+      if (i >= a.length) out.push({ path: [...path, i], type: 'added', rightVal: b[i] });
+      else if (i >= b.length) out.push({ path: [...path, i], type: 'removed', leftVal: a[i] });
+      else walk(a[i], b[i], [...path, i], out);
+    }
+    return;
+  }
   if (!isObject(a) && !Array.isArray(a)) {
     if (a !== b) out.push({ path, type: 'changed', leftVal: a, rightVal: b });
   }

@@ -58,3 +58,29 @@ describe('diff objects (differences)', () => {
     expect(r.entries).toEqual([{ path: ['x'], type: 'removed', leftVal: null }]);
   });
 });
+
+describe('diff arrays (no difference)', () => {
+  it('equal arrays', () => expect(diff([1, 2], [1, 2]).entries).toEqual([]));
+});
+
+describe('diff arrays (positional)', () => {
+  it('element changed', () => {
+    const r = diff(['a', 'b'], ['a', 'c']);
+    expect(r.entries).toEqual([{ path: [1], type: 'changed', leftVal: 'b', rightVal: 'c' }]);
+  });
+  it('element added at end', () => {
+    const r = diff(['a'], ['a', 'b']);
+    expect(r.entries).toEqual([{ path: [1], type: 'added', rightVal: 'b' }]);
+  });
+  it('element removed from end', () => {
+    const r = diff(['a', 'b'], ['a']);
+    expect(r.entries).toEqual([{ path: [1], type: 'removed', leftVal: 'b' }]);
+  });
+  it('combined change and add (site scenario tags)', () => {
+    const r = diff(['a', 'b'], ['a', 'c', 'd']);
+    expect(r.entries).toEqual([
+      { path: [1], type: 'changed', leftVal: 'b', rightVal: 'c' },
+      { path: [2], type: 'added', rightVal: 'd' },
+    ]);
+  });
+});
