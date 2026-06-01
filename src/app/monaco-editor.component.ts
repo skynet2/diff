@@ -88,6 +88,7 @@ export class MonacoEditorComponent implements OnInit, OnDestroy {
   readonly value = input<string>('');
   readonly language = input<'json' | 'yaml'>('json');
   readonly valueChange = output<string>();
+  readonly scrolled = output<{ top: number; left: number }>();
 
   private readonly host = inject(ElementRef<HTMLElement>).nativeElement as HTMLElement;
   private monaco?: MonacoApi;
@@ -95,6 +96,16 @@ export class MonacoEditorComponent implements OnInit, OnDestroy {
   private debounceTimer?: ReturnType<typeof setTimeout>;
   private suppressEmit = false;
   private destroyed = false;
+  private applyingScroll = false;
+
+  setScroll(top: number, left: number): void {
+    if (!this.editor) {
+      return;
+    }
+    this.applyingScroll = true;
+    this.editor.setScrollPosition({ scrollTop: top, scrollLeft: left });
+    this.applyingScroll = false;
+  }
 
   constructor() {
     effect(() => {
@@ -134,6 +145,7 @@ export class MonacoEditorComponent implements OnInit, OnDestroy {
     this.editor = monaco.editor.create(this.host, {
       value: this.value(),
       language: this.language(),
+      theme: 'vs-dark',
       automaticLayout: true,
       minimap: { enabled: false },
       scrollBeyondLastLine: false,
@@ -141,6 +153,12 @@ export class MonacoEditorComponent implements OnInit, OnDestroy {
       tabSize: 2,
     });
     this.editor.onDidChangeModelContent(() => this.onContentChanged());
+    this.editor.onDidScrollChange((e) => {
+      if (this.applyingScroll) {
+        return;
+      }
+      this.scrolled.emit({ top: e.scrollTop, left: e.scrollLeft });
+    });
   }
 
   ngOnDestroy(): void {

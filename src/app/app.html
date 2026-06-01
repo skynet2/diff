@@ -3,18 +3,22 @@
     class="panel"
     [side]="'left'"
     [expanded]="expanded()"
+    [hideSame]="hideSame()"
     (toggleExpand)="onToggleExpand($event)"
   />
   <app-diff-controls
     [count]="count()"
     [position]="position()"
+    [hideSame]="hideSame()"
     (prev)="prev()"
     (next)="next()"
+    (hideSameChange)="hideSame.set($event)"
   />
   <app-editor-panel
     class="panel"
     [side]="'right'"
     [expanded]="expanded()"
+    [hideSame]="hideSame()"
     (toggleExpand)="onToggleExpand($event)"
   />
 </div>

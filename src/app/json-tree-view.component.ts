@@ -9,12 +9,16 @@ const STATUS_CLASS: Record<NodeStatus, string> = {
   removed: 'diff-removed',
 };
 
+export function filterVisible(nodes: MergedNode[], hideSame: boolean): MergedNode[] {
+  return hideSame ? nodes.filter((n) => n.status !== 'same') : nodes;
+}
+
 @Component({
   selector: 'app-json-tree-view',
   standalone: true,
   imports: [JsonTreeViewComponent],
   template: `
-    @for (node of nodes(); track node.key) {
+    @for (node of displayNodes(); track node.key) {
       @let cell = cellOf(node);
       @if (cell === undefined) {
         <div class="row filler"></div>
@@ -41,6 +45,7 @@ const STATUS_CLASS: Record<NodeStatus, string> = {
               [nodes]="node.children"
               [side]="side()"
               [expanded]="expanded()"
+              [hideSame]="hideSame()"
               [path]="childPath(node)"
               (toggle)="toggle.emit($event)"
             />
@@ -69,13 +74,13 @@ const STATUS_CLASS: Record<NodeStatus, string> = {
         background: transparent;
       }
       .diff-changed {
-        background: #fff3cd;
+        background: rgba(255, 213, 0, 0.16);
       }
       .diff-added {
-        background: #d4edda;
+        background: rgba(63, 185, 80, 0.2);
       }
       .diff-removed {
-        background: #f8d7da;
+        background: rgba(248, 81, 73, 0.2);
       }
       .caret,
       .caret-spacer {
@@ -89,18 +94,18 @@ const STATUS_CLASS: Record<NodeStatus, string> = {
         cursor: pointer;
         padding: 0;
         font: inherit;
-        color: #555;
+        color: #999;
       }
       .key {
-        color: #905;
+        color: #c586c0;
         margin-right: 6px;
       }
       .key::after {
         content: ':';
-        color: #888;
+        color: #808080;
       }
       .value {
-        color: #07a;
+        color: #9cdcfe;
       }
       .children {
         padding-left: 14px;
@@ -112,9 +117,14 @@ export class JsonTreeViewComponent {
   readonly nodes = input.required<MergedNode[]>();
   readonly side = input.required<'left' | 'right'>();
   readonly expanded = input.required<Set<string>>();
+  readonly hideSame = input<boolean>(false);
   readonly path = input<(string | number)[]>([]);
 
   readonly toggle = output<string>();
+
+  displayNodes(): MergedNode[] {
+    return filterVisible(this.nodes(), this.hideSame());
+  }
 
   cellOf(node: MergedNode): MergedCell | undefined {
     return this.side() === 'left' ? node.left : node.right;

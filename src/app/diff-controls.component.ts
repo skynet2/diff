@@ -34,6 +34,15 @@ import {
         >▼</button>
       </div>
     }
+
+    <label class="hide-same" data-testid="hide-same">
+      <input
+        type="checkbox"
+        [checked]="hideSame()"
+        (change)="hideSameChange.emit($any($event.target).checked)"
+      />
+      <span>Hide same</span>
+    </label>
   `,
   styles: [
     `
@@ -43,11 +52,11 @@ import {
         align-items: center;
         gap: 6px;
         padding: 10px 8px;
-        background: #f5f5f7;
-        border-inline: 1px solid #d0d0d6;
+        background: #252526;
+        border-inline: 1px solid #3a3a3a;
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
         font-size: 12px;
-        color: #333;
+        color: #d4d4d4;
         user-select: none;
       }
       .label {
@@ -55,7 +64,7 @@ import {
         text-align: center;
       }
       .position {
-        color: #666;
+        color: #9a9a9a;
       }
       .nav {
         display: flex;
@@ -65,20 +74,33 @@ import {
       .nav-btn {
         width: 26px;
         height: 26px;
-        border: 1px solid #c0c0c6;
+        border: 1px solid #3a3a3a;
         border-radius: 4px;
-        background: #fff;
+        background: #333336;
         cursor: pointer;
         font-size: 12px;
         line-height: 1;
-        color: #333;
+        color: #d4d4d4;
       }
       .nav-btn:hover:not(:disabled) {
-        background: #e8e8ee;
+        background: #45454a;
       }
       .nav-btn:disabled {
         opacity: 0.4;
         cursor: default;
+      }
+      .hide-same {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 4px;
+        cursor: pointer;
+        text-align: center;
+        line-height: 1.2;
+      }
+      .hide-same input {
+        cursor: pointer;
+        margin: 0;
       }
     `,
   ],
@@ -86,6 +108,8 @@ import {
 export class DiffControlsComponent {
   readonly count = input.required<number>();
   readonly position = input.required<number>();
+  readonly hideSame = input<boolean>(false);
   readonly prev = output<void>();
   readonly next = output<void>();
+  readonly hideSameChange = output<boolean>();
 }

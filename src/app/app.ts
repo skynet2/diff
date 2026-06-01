@@ -16,6 +16,7 @@ export class App {
 
   protected readonly expanded = signal<Set<string>>(new Set());
   protected readonly currentIndex = signal(0);
+  protected readonly hideSame = signal(false);
 
   protected readonly count = computed(() => this.svc.result().entries.length);
   private readonly boundedIndex = computed(() =>

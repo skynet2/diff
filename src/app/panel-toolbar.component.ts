@@ -68,29 +68,29 @@ import { UpperCasePipe } from '@angular/common';
         align-items: center;
         gap: 8px;
         padding: 4px 6px;
-        background: #f5f5f5;
-        border-bottom: 1px solid #ddd;
+        background: #252526;
+        border-bottom: 1px solid #3a3a3a;
         font-size: 12px;
       }
       .group {
         display: inline-flex;
-        border: 1px solid #ccc;
+        border: 1px solid #3a3a3a;
         border-radius: 4px;
         overflow: hidden;
       }
       .group button {
         border: 0;
-        background: #fff;
+        background: #333336;
         padding: 2px 10px;
         cursor: pointer;
         font: inherit;
-        color: #333;
+        color: #d4d4d4;
       }
       .group button + button {
-        border-left: 1px solid #ccc;
+        border-left: 1px solid #3a3a3a;
       }
       .group button.active {
-        background: #1971c2;
+        background: #0e639c;
         color: #fff;
       }
       .hint {
@@ -99,14 +99,14 @@ import { UpperCasePipe } from '@angular/common';
         gap: 6px;
         margin-left: auto;
         padding: 2px 6px;
-        background: #fff3cd;
-        border: 1px solid #ffe08a;
+        background: #3a3320;
+        border: 1px solid #5c4d1a;
         border-radius: 4px;
-        color: #664d03;
+        color: #e0c87a;
       }
       .hint .switch {
         border: 0;
-        background: #1971c2;
+        background: #0e639c;
         color: #fff;
         border-radius: 3px;
         padding: 1px 8px;
@@ -119,7 +119,7 @@ import { UpperCasePipe } from '@angular/common';
         cursor: pointer;
         font-size: 14px;
         line-height: 1;
-        color: #664d03;
+        color: #e0c87a;
         padding: 0 2px;
       }
     `,

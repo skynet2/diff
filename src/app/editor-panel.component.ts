@@ -1,16 +1,20 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   computed,
+  effect,
   inject,
   input,
   output,
   signal,
+  viewChild,
 } from '@angular/core';
 import { MonacoEditorComponent } from './monaco-editor.component';
 import { JsonTreeViewComponent } from './json-tree-view.component';
 import { PanelToolbarComponent } from './panel-toolbar.component';
 import { DiffStateService } from './diff-state.service';
+import { ScrollSyncService } from './scroll-sync.service';
 import { parseContent, suggestFormat } from './parse/parse';
 
 @Component({
@@ -29,12 +33,13 @@ import { parseContent, suggestFormat } from './parse/parse';
       (dismissSuggestion)="dismissed.set(true)"
     />
 
-    <div class="body">
+    <div #body class="body" (scroll)="onBodyScroll()">
       @if (viewMode() === 'text') {
         <app-monaco-editor
           [value]="rawText()"
           [language]="format()"
           (valueChange)="onText($event)"
+          (scrolled)="onMonacoScroll($event)"
         />
       } @else {
         @if (error()) {
@@ -44,6 +49,7 @@ import { parseContent, suggestFormat } from './parse/parse';
             [nodes]="svc.merged()"
             [side]="side()"
             [expanded]="expanded()"
+            [hideSame]="hideSame()"
             (toggle)="toggleExpand.emit($event)"
           />
         }
@@ -56,6 +62,7 @@ import { parseContent, suggestFormat } from './parse/parse';
         display: flex;
         flex-direction: column;
         height: 100%;
+        background: #1e1e1e;
       }
       .body {
         flex: 1;
@@ -64,8 +71,8 @@ import { parseContent, suggestFormat } from './parse/parse';
       }
       .parse-error {
         padding: 8px 10px;
-        color: #842029;
-        background: #f8d7da;
+        color: #f48771;
+        background: #3a1d1d;
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
         font-size: 12px;
         white-space: pre-wrap;
@@ -76,9 +83,15 @@ import { parseContent, suggestFormat } from './parse/parse';
 export class EditorPanelComponent {
   readonly side = input.required<'left' | 'right'>();
   readonly expanded = input.required<Set<string>>();
+  readonly hideSame = input<boolean>(false);
   readonly toggleExpand = output<string>();
 
   protected readonly svc = inject(DiffStateService);
+  private readonly scroll = inject(ScrollSyncService);
+
+  private readonly bodyRef = viewChild<ElementRef<HTMLElement>>('body');
+  private readonly monacoCmp = viewChild(MonacoEditorComponent);
+  private applying = false;
 
   protected readonly rawText = signal('');
   protected readonly format = signal<'json' | 'yaml'>('json');
@@ -90,6 +103,14 @@ export class EditorPanelComponent {
     this.dismissed() ? null : suggestFormat(this.rawText(), this.format()),
   );
 
+  constructor() {
+    effect(() => {
+      const top = this.scroll.top();
+      const left = this.scroll.left();
+      this.applyScroll(top, left);
+    });
+  }
+
   onText(text: string): void {
     this.rawText.set(text);
     this.dismissed.set(false);
@@ -99,6 +120,39 @@ export class EditorPanelComponent {
   onFormat(format: 'json' | 'yaml'): void {
     this.format.set(format);
     this.reparse();
+  }
+
+  onBodyScroll(): void {
+    if (this.applying) {
+      return;
+    }
+    const el = this.bodyRef()?.nativeElement;
+    if (el) {
+      this.scroll.report(el.scrollTop, el.scrollLeft);
+    }
+  }
+
+  onMonacoScroll(e: { top: number; left: number }): void {
+    if (this.applying) {
+      return;
+    }
+    this.scroll.report(e.top, e.left);
+  }
+
+  private applyScroll(top: number, left: number): void {
+    this.applying = true;
+    if (this.viewMode() === 'text') {
+      this.monacoCmp()?.setScroll(top, left);
+    } else {
+      const el = this.bodyRef()?.nativeElement;
+      if (el) {
+        el.scrollTop = top;
+        el.scrollLeft = left;
+      }
+    }
+    setTimeout(() => {
+      this.applying = false;
+    }, 0);
   }
 
   private push(value: unknown): void {

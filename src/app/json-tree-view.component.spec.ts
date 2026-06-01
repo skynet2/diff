@@ -1,6 +1,22 @@
 import { TestBed } from '@angular/core/testing';
-import { JsonTreeViewComponent } from './json-tree-view.component';
+import { JsonTreeViewComponent, filterVisible } from './json-tree-view.component';
 import { MergedNode } from './diff/diff.types';
+
+describe('filterVisible', () => {
+  const nodes: MergedNode[] = [
+    { key: 'a', status: 'same', left: { value: 1, hasChildren: false }, right: { value: 1, hasChildren: false } },
+    { key: 'b', status: 'changed', left: { value: 1, hasChildren: false }, right: { value: 2, hasChildren: false } },
+    { key: 'c', status: 'added', right: { value: 3, hasChildren: false } },
+  ];
+
+  it('returns all nodes when hideSame is false', () => {
+    expect(filterVisible(nodes, false)).toBe(nodes);
+  });
+
+  it('drops same nodes when hideSame is true', () => {
+    expect(filterVisible(nodes, true).map((n) => n.key)).toEqual(['b', 'c']);
+  });
+});
 
 function render(nodes: MergedNode[], side: 'left' | 'right'): HTMLElement {
   const fixture = TestBed.createComponent(JsonTreeViewComponent);
