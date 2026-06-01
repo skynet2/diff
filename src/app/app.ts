@@ -22,11 +22,11 @@ export class App {
 
   protected readonly selectedKey = computed(() => {
     const p = this.selectedPath();
-    return p ? pathKey(p) : '';
+    return Array.isArray(p) ? pathKey(p) : '';
   });
   protected readonly selectedDisplay = computed(() => {
     const p = this.selectedPath();
-    return p ? toJsonPath(p) : '';
+    return Array.isArray(p) ? toJsonPath(p) : '';
   });
 
   protected readonly count = computed(() => this.svc.result().entries.length);
