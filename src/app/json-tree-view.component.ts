@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { MergedCell, MergedNode, NodeStatus } from './diff/diff.types';
 import { pathKey } from './diff/path';
 
@@ -38,7 +38,9 @@ export function filterVisible(nodes: MergedNode[], hideSame: boolean): MergedNod
               class="caret"
               (click)="toggle.emit(key); $event.stopPropagation()"
               [attr.aria-expanded]="open"
-            >{{ open ? '▾' : '▸' }}</button>
+            >
+              {{ open ? '▾' : '▸' }}
+            </button>
           } @else {
             <span class="caret-spacer"></span>
           }
@@ -62,6 +64,7 @@ export function filterVisible(nodes: MergedNode[], hideSame: boolean): MergedNod
       }
     }
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       :host {
