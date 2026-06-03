@@ -45,19 +45,14 @@ jobs:
 
   osv:
     name: OSV-Scanner
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-      - name: Run OSV-Scanner
-        continue-on-error: true
-        uses: google/osv-scanner-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
-        with:
-          scan-args: |-
-            --format=sarif
-            --output=osv-results.sarif
-            --lockfile=package-lock.json
-      - name: Upload OSV results
-        uses: github/codeql-action/upload-sarif@d77b13a0df3134d64a457ea9003f600b09fa1c8a # v3.36.1
-        with:
-          sarif_file: osv-results.sarif
-          category: osv
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    # OSV recommends its reusable workflow over the step action; it scans and
+    # uploads SARIF to the Security tab itself.
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
+    with:
+      scan-args: |-
+        --lockfile=package-lock.json
+      fail-on-vuln: false
