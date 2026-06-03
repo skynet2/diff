@@ -9,6 +9,7 @@ import {
   input,
   output,
 } from '@angular/core';
+import { type Format } from './parse/parse';
 
 const MONACO_BASE = '/assets/monaco/vs';
 
@@ -86,7 +87,7 @@ function loadMonaco(): Promise<MonacoApi> {
 })
 export class MonacoEditorComponent implements OnInit, OnDestroy {
   readonly value = input<string>('');
-  readonly language = input<'json' | 'yaml'>('json');
+  readonly language = input<Format>('json');
   readonly valueChange = output<string>();
   readonly scrolled = output<{ top: number; left: number }>();
   readonly caret = output<{ offset: number; text: string }>();

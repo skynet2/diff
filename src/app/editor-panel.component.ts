@@ -15,7 +15,7 @@ import { JsonTreeViewComponent } from './json-tree-view.component';
 import { PanelToolbarComponent } from './panel-toolbar.component';
 import { DiffStateService } from './diff-state.service';
 import { ScrollSyncService } from './scroll-sync.service';
-import { parseContent, pathAtOffset, serialize, suggestFormat } from './parse/parse';
+import { parseContent, pathAtOffset, serialize, suggestFormat, type Format } from './parse/parse';
 
 @Component({
   selector: 'app-editor-panel',
@@ -99,7 +99,7 @@ export class EditorPanelComponent {
   private applying = false;
 
   protected readonly rawText = signal('');
-  protected readonly format = signal<'json' | 'yaml'>('json');
+  protected readonly format = signal<Format>('json');
   protected readonly viewMode = signal<'text' | 'tree'>('text');
   protected readonly dismissed = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -122,7 +122,7 @@ export class EditorPanelComponent {
     this.reparse();
   }
 
-  onFormat(format: 'json' | 'yaml'): void {
+  onFormat(format: Format): void {
     this.format.set(format);
     this.reparse();
   }

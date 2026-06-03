@@ -1,8 +1,22 @@
 import { load, loadAll, dump } from 'js-yaml';
 import { getLocation } from 'jsonc-parser';
 import { parseDocument, isMap, isSeq, isScalar } from 'yaml';
+import { XMLParser, XMLBuilder, XMLValidator } from 'fast-xml-parser';
 
-export type Format = 'json' | 'yaml';
+export type Format = 'json' | 'yaml' | 'xml';
+
+const XML_OPTIONS = {
+  ignoreAttributes: false,
+  attributeNamePrefix: '@_',
+  textNodeName: '#text',
+  commentPropName: '#comment',
+  cdataPropName: '#cdata',
+  preserveOrder: false,
+  parseAttributeValue: false,
+  parseTagValue: false,
+  trimValues: true,
+  removeNSPrefix: false,
+};
 export interface ParseOk { value: unknown; error?: undefined; }
 export interface ParseErr { value?: undefined; error: string; }
 export type ParseResult = ParseOk | ParseErr;
@@ -18,9 +32,18 @@ function parseYaml(text: string): ParseResult {
   return { value: docs.length === 0 ? undefined : load(text) };
 }
 
+function parseXml(text: string): ParseResult {
+  const valid = XMLValidator.validate(text, { allowBooleanAttributes: true });
+  if (valid !== true) {
+    return { error: 'XML: ' + valid.err.msg + ' (line ' + valid.err.line + ')' };
+  }
+  return { value: new XMLParser(XML_OPTIONS).parse(text) };
+}
+
 export function parseContent(text: string, format: Format): ParseResult {
   try {
     if (format === 'json') return { value: JSON.parse(text) };
+    if (format === 'xml') return parseXml(text);
     return parseYaml(text);
   } catch (e) {
     return { error: e instanceof Error ? e.message : String(e) };

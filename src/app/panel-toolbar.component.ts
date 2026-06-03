@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { UpperCasePipe } from '@angular/common';
+import { type Format } from './parse/parse';
 
 @Component({
   selector: 'app-panel-toolbar',
@@ -127,11 +128,11 @@ import { UpperCasePipe } from '@angular/common';
 })
 export class PanelToolbarComponent {
   readonly viewMode = input.required<'text' | 'tree'>();
-  readonly format = input.required<'json' | 'yaml'>();
-  readonly suggestion = input.required<'json' | 'yaml' | null>();
+  readonly format = input.required<Format>();
+  readonly suggestion = input.required<Format | null>();
 
   readonly viewModeChange = output<'text' | 'tree'>();
-  readonly formatChange = output<'json' | 'yaml'>();
+  readonly formatChange = output<Format>();
   readonly acceptSuggestion = output<void>();
   readonly dismissSuggestion = output<void>();
 }

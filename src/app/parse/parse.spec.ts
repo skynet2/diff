@@ -52,6 +52,30 @@ describe('parseContent (failure)', () => {
   });
 });
 
+describe('parseContent xml (success)', () => {
+  it('elements and text', () => {
+    expect(parseContent('<a><b>hi</b></a>', 'xml')).toEqual({ value: { a: { b: 'hi' } } });
+  });
+  it('attributes use @_ prefix', () => {
+    expect(parseContent('<a id="1">hi</a>', 'xml')).toEqual({
+      value: { a: { '@_id': '1', '#text': 'hi' } },
+    });
+  });
+  it('repeated tags become arrays', () => {
+    expect(parseContent('<r><i>a</i><i>b</i></r>', 'xml')).toEqual({
+      value: { r: { i: ['a', 'b'] } },
+    });
+  });
+});
+
+describe('parseContent xml (failure)', () => {
+  it('malformed xml reports error', () => {
+    const r = parseContent('<a><b></a>', 'xml');
+    expect(r.value).toBeUndefined();
+    expect(typeof r.error).toBe('string');
+  });
+});
+
 describe('suggestFormat', () => {
   it('suggests yaml when json fails but yaml parses', () => {
     expect(suggestFormat('x: 1', 'json')).toBe('yaml');
