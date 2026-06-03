@@ -10,6 +10,10 @@
   },
   "private": true,
   "packageManager": "npm@10.9.7",
+  "overrides": {
+    "lodash": "^4.18.1",
+    "dompurify": "^3.4.8"
+  },
   "dependencies": {
     "@angular/common": "^22.0.0",
     "@angular/compiler": "^22.0.0",
