@@ -25,6 +25,23 @@ describe('PanelToolbarComponent', () => {
     expect(emitted).toEqual(['tree']);
   });
 
+  it('emits formatChange("xml") when XML button clicked', async () => {
+    const fixture = TestBed.createComponent(PanelToolbarComponent);
+    fixture.componentRef.setInput('viewMode', 'text');
+    fixture.componentRef.setInput('format', 'json');
+    fixture.componentRef.setInput('suggestion', null);
+    await fixture.whenStable();
+
+    const emitted: ('json' | 'yaml' | 'xml')[] = [];
+    fixture.componentInstance.formatChange.subscribe((v) => emitted.push(v));
+
+    const el = fixture.nativeElement as HTMLElement;
+    const xmlBtn = el.querySelector<HTMLButtonElement>('[data-test="format-xml"]')!;
+    xmlBtn.click();
+
+    expect(emitted).toEqual(['xml']);
+  });
+
   it('shows YAML hint and emits acceptSuggestion on switch', async () => {
     const fixture = TestBed.createComponent(PanelToolbarComponent);
     fixture.componentRef.setInput('viewMode', 'text');

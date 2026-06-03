@@ -37,6 +37,12 @@ import { type Format } from './parse/parse';
           [class.active]="format() === 'yaml'"
           (click)="formatChange.emit('yaml')"
         >YAML</button>
+        <button
+          type="button"
+          data-test="format-xml"
+          [class.active]="format() === 'xml'"
+          (click)="formatChange.emit('xml')"
+        >XML</button>
       </div>
 
       @if (suggestion(); as s) {
