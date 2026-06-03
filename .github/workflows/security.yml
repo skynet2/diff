@@ -16,7 +16,7 @@ jobs:
     name: Trivy (filesystem)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run Trivy
         uses: aquasecurity/trivy-action@0.28.0
         with:
@@ -34,7 +34,7 @@ jobs:
     name: CodeQL
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: github/codeql-action/init@v3
         with:
           languages: javascript-typescript
@@ -47,7 +47,7 @@ jobs:
     name: OSV-Scanner
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Run OSV-Scanner
         continue-on-error: true
         uses: google/osv-scanner-action@v1.9.2
