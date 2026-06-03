@@ -28,7 +28,7 @@
     "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@angular/build": "^21.2.13",
+    "@angular/build": "^22.0.0",
     "@angular/cli": "^21.2.13",
     "@angular/compiler-cli": "^21.2.0",
     "@types/js-yaml": "^4.0.9",
