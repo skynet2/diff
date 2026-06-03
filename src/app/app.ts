@@ -1,4 +1,11 @@
-import { Component, computed, inject, signal, viewChildren } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChildren,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { EditorPanelComponent } from './editor-panel.component';
 import { DiffControlsComponent } from './diff-controls.component';
 import { DiffStateService } from './diff-state.service';
@@ -9,6 +16,7 @@ import { pathKey, toJsonPath } from './diff/path';
   standalone: true,
   imports: [EditorPanelComponent, DiffControlsComponent],
   templateUrl: './app.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.scss',
 })
 export class App {
@@ -33,9 +41,7 @@ export class App {
   private readonly boundedIndex = computed(() =>
     Math.min(this.currentIndex(), Math.max(0, this.count() - 1)),
   );
-  protected readonly position = computed(() =>
-    this.count() === 0 ? 0 : this.boundedIndex() + 1,
-  );
+  protected readonly position = computed(() => (this.count() === 0 ? 0 : this.boundedIndex() + 1));
 
   onSelect(path: (string | number)[]): void {
     this.selectedPath.set(path);
