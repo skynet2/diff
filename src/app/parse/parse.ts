@@ -122,6 +122,9 @@ export function serialize(value: unknown, format: Format): string {
 export function suggestFormat(text: string, current: Format): Format | null {
   if (text.trim() === '') return null;
   if (isOk(parseContent(text, current))) return null;
-  const other: Format = current === 'json' ? 'yaml' : 'json';
-  return isOk(parseContent(text, other)) ? other : null;
+  const order: Format[] = ['json', 'xml', 'yaml'];
+  for (const other of order) {
+    if (other !== current && isOk(parseContent(text, other))) return other;
+  }
+  return null;
 }

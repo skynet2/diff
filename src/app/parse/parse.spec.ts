@@ -101,3 +101,12 @@ describe('suggestFormat', () => {
     expect(suggestFormat('   \n  ', 'json')).toBeNull();
   });
 });
+
+describe('suggestFormat with xml', () => {
+  it('suggests xml when current fails but xml parses', () => {
+    expect(suggestFormat('<a>1</a>', 'json')).toBe('xml');
+  });
+  it('no suggestion when current (xml) parses', () => {
+    expect(suggestFormat('<a>1</a>', 'xml')).toBeNull();
+  });
+});
