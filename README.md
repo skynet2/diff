@@ -1,59 +1,33 @@
-# DiffApp
+# diff
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.13.
+A minimal, two-panel **semantic diff** editor for **JSON, YAML, and XML**, built with Angular.
 
-## Development server
+**Live:** https://skynet2.github.io/diff/
 
-To start a local development server, run:
+## What it does
 
-```bash
-ng serve
-```
+- **Two editors side by side**, each independently switchable between **Text** (Monaco) and **Tree** view.
+- **Per-panel format**: JSON ⇄ YAML ⇄ XML. The two sides can even use different formats — the diff compares the parsed data, not the text.
+- **Semantic diff** in tree mode: differences are computed structurally (key/path based, order-independent for object keys), then rendered as aligned rows with colour highlights — amber = changed, green = added, red = removed.
+- **Navigation**: a difference counter with ▲▼ to jump between changes.
+- **Hide same**: collapse the tree to only the differences.
+- **Format**: pretty-print both documents.
+- **Path on click**: click a node (tree) or place the cursor in the text — the status bar shows its path, e.g. `$.user.tags[1]` or `$.catalog.book[0]["@_id"]`.
+- **Dark theme**, lockstep scrolling between panels, and a content-based "looks like YAML/XML — switch?" hint.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## How it works
 
-## Code scaffolding
+The diff engine is pure and framework-free: each format is parsed into a plain JavaScript value (JSON natively, YAML via `js-yaml`, XML via `fast-xml-parser`), and a single structural diff/merge compares the two values. The UI is Angular standalone components with signals; Monaco powers text editing; cursor→path resolution uses `jsonc-parser` (JSON), `yaml` (YAML), and `@xml-tools` (XML).
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Development
 
 ```bash
-ng build
+npm install
+npm start                   # dev server at http://localhost:4200/
+npm test -- --watch=false   # unit tests (Vitest)
+npm run build               # production build -> dist/diff-app/browser
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## License
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+MIT

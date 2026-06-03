@@ -42,3 +42,6 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Internal design/plan docs (kept local, not published)
+/docs/plans/
