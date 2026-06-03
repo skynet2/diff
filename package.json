@@ -15,7 +15,7 @@
     "@angular/compiler": "^21.2.0",
     "@angular/core": "^21.2.0",
     "@angular/forms": "^21.2.0",
-    "@angular/platform-browser": "^21.2.0",
+    "@angular/platform-browser": "^22.0.0",
     "@angular/router": "^21.2.0",
     "@xml-tools/ast": "^5.0.5",
     "@xml-tools/parser": "^1.0.11",
