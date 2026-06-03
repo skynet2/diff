@@ -11,7 +11,10 @@ import {
 } from '@angular/core';
 import { type Format } from './parse/parse';
 
-const MONACO_BASE = '/assets/monaco/vs';
+// Resolve the Monaco assets against the document base URL so it works under any
+// deploy path (e.g. GitHub Pages serves the app from /diff/, not /). Using
+// document.baseURI honors the <base href> Angular emits.
+const MONACO_BASE = new URL('assets/monaco/vs', document.baseURI).href;
 
 type MonacoApi = typeof import('monaco-editor');
 
