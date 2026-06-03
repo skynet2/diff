@@ -1,4 +1,4 @@
-import { parseContent, pathAtOffset, suggestFormat } from './parse';
+import { parseContent, pathAtOffset, serialize, suggestFormat } from './parse';
 
 describe('pathAtOffset', () => {
   const json = '{\n  "user": {\n    "name": "alice"\n  },\n  "age": 30\n}';
@@ -73,6 +73,14 @@ describe('parseContent xml (failure)', () => {
     const r = parseContent('<a><b></a>', 'xml');
     expect(r.value).toBeUndefined();
     expect(typeof r.error).toBe('string');
+  });
+});
+
+describe('serialize xml', () => {
+  it('round-trips elements and attributes', () => {
+    const value = { a: { '@_id': '1', b: 'hi' } };
+    const xml = serialize(value, 'xml');
+    expect(parseContent(xml, 'xml')).toEqual({ value });
   });
 });
 

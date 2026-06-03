@@ -112,7 +112,11 @@ export function pathAtOffset(
 }
 
 export function serialize(value: unknown, format: Format): string {
-  return format === 'json' ? JSON.stringify(value, null, 2) : dump(value);
+  if (format === 'json') return JSON.stringify(value, null, 2);
+  if (format === 'xml') {
+    return new XMLBuilder({ ...XML_OPTIONS, format: true, indentBy: '  ' }).build(value);
+  }
+  return dump(value);
 }
 
 export function suggestFormat(text: string, current: Format): Format | null {
