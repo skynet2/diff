@@ -33,6 +33,12 @@ describe('pathAtOffset', () => {
     const offset = yaml.indexOf('30') + 1;
     expect(pathAtOffset(yaml, 'yaml', offset)).toEqual(['age']);
   });
+
+  it('xml: returns the path at a nested value', () => {
+    const xml = '<r><user><name>alice</name></user></r>';
+    const offset = xml.indexOf('alice') + 1;
+    expect(pathAtOffset(xml, 'xml', offset)).toEqual(['r', 'user', 'name']);
+  });
 });
 
 describe('parseContent (success)', () => {

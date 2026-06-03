@@ -2,6 +2,7 @@ import { load, loadAll, dump } from 'js-yaml';
 import { getLocation } from 'jsonc-parser';
 import { parseDocument, isMap, isSeq, isScalar } from 'yaml';
 import { XMLParser, XMLBuilder, XMLValidator } from 'fast-xml-parser';
+import { xmlPathAtOffset } from './xml-path';
 
 export type Format = 'json' | 'yaml' | 'xml';
 
@@ -107,6 +108,9 @@ export function pathAtOffset(
   if (format === 'json') {
     const path = getLocation(text, offset).path;
     return path.length > 0 ? path : null;
+  }
+  if (format === 'xml') {
+    return xmlPathAtOffset(text, offset);
   }
   return yamlPathAtOffset(text, offset);
 }
